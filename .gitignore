@@ -1,0 +1,9 @@
+# Dependencies
+/node_modules
+
+# Cloudflare Wrangler
+/.wrangler/
+/tmp/
+
+# macOS
+.DS_Store
