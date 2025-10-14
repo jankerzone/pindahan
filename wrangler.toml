@@ -1,0 +1,27 @@
+name = "pindahan-app"
+main = "worker/index.js"
+compatibility_date = "2023-05-18"
+
+[vars]
+ENVIRONMENT = "production"
+
+[[ d1_databases ]]
+binding = "DB" # tersedia di Worker sebagai env.DB
+database_name = "pindahan-db"
+database_id = "c53540a4-17a0-49fd-9fc7-21dcd9e0f4d5"
+
+[build]
+command = ""
+
+[env.dev]
+d1_databases = [
+  { binding = "DB", database_name = "pindahan-db-local", database_id = "a904372d-57d5-4d32-94b6-0e2efd342d9d" }
+]
+
+[env.preview]
+d1_databases = [
+  { binding = "DB", database_name = "pindahan-db-preview", database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" }
+]
+
+[site]
+bucket = "./frontend"
