@@ -25,7 +25,7 @@ Untuk menjalankan proyek ini secara lokal, Anda memerlukan [Node.js](https://nod
 
 1.  **Clone repositori ini:**
     ```bash
-    git clone <URL_REPOSITORI_ANDA>
+    git clone https://github.com/jankerzone/pindahan.git
     cd pindahan-app
     ```
 
