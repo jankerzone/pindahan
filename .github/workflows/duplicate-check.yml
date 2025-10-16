@@ -1,0 +1,44 @@
+name: Check for Duplicate Issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  check-duplicates:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Search for similar issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const query = `${issue.title} repo:${context.repo.owner}/${context.repo.repo} is:issue`;
+            
+            const { data } = await github.rest.search.issuesAndPullRequests({
+              q: query,
+              per_page: 3,
+            });
+
+            if (data.total_count > 1) {
+              let body = `This issue might be a duplicate of existing issues. Please check:\n\n`;
+              for (const result of data.items) {
+                if (result.number !== issue.number) {
+                  body += `- [#${result.number}](${result.html_url}): ${result.title}\n`;
+                }
+              }
+
+              body += `\nFeel free to ignore if none address your specific case.`;
+
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: issue.number,
+                body: body
+              });
+            } else {
+              console.log("No similar issues found.");
+            }
