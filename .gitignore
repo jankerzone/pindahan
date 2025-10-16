@@ -8,5 +8,6 @@
 # macOS
 .DS_Store
 
+# github actions
 .gemini/
 gha-creds-*.json
