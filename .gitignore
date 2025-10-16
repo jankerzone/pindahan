@@ -11,3 +11,4 @@
 # github actions
 .gemini/
 gha-creds-*.json
+/.github/
