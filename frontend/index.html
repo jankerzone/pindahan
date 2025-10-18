@@ -25,14 +25,27 @@
                     <label for="box-label">Label Kardus:</label>
                     <input type="text" id="box-label" placeholder="Contoh: Dapur - Piring Pecah Belah" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="box-content">Isi Kardus (pisahkan dengan koma):</label>
                     <textarea id="box-content" placeholder="Contoh: hardisk external, hdd, keyboard usb, pakaian, tas hermes" required></textarea>
                 </div>
-                
+
                 <button type="submit">Simpan & Buat ID Unik</button>
             </form>
+
+            <!-- Section baru untuk Input ID unik dan tombol Lihat Kardus -->
+            <div style="margin-top: 20px; display: flex; align-items: center; gap: 10px;">
+                <input type="text" id="idUnikInput" placeholder="Masukkan ID unik (4 karakter)"
+                       oninput="this.value = this.value.toUpperCase().slice(0, 4);"
+                       maxlength="4"
+                       style="flex: 3; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
+                <button id="lihatKardusButton"
+                        onclick="const id = document.getElementById('idUnikInput').value.trim().toUpperCase(); if(id.length === 4) { window.open(window.location.origin + '/#' + id, '_blank'); } else { alert('Mohon masukkan 4 karakter ID unik.'); }"
+                        style="flex: 1; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                    Lihat Kardus
+                </button>
+            </div>
 
             <div id="result" class="result hidden">
                 <h3>Kode Unik Kardus Anda:</h3>
@@ -53,6 +66,9 @@
                 <div class="box-label-display" id="display-label"></div>
             </div>
             <div class="box-content-display">
+                <div class="search-container">
+                    <input type="text" id="search-items" placeholder="Cari item...">
+                </div>
                 <h3>Isi Kardus:</h3>
                 <ul id="display-content"></ul>
                 <div class="add-item-form">

@@ -1,0 +1,31 @@
+{
+  "name": "pindahan-app",
+  "version": "1.0.0",
+  "description": "Aplikasi web sederhana untuk membantu mengelola dan melacak barang-barang saat pindahan",
+  "scripts": {
+    "dev": "wrangler dev --env dev",
+    "dev-local": "tsx --watch worker/index.ts",
+    "deploy": "wrangler deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "hono",
+    "moving",
+    "inventory"
+  ],
+  "author": "Jankerzone",
+  "license": "MIT",
+  "dependencies": {
+    "@hono/node-server": "^1.19.5",
+    "hono": "^4.5.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240821.1",
+    "@types/node": "^24.7.2",
+    "tsx": "^4.20.6",
+    "wrangler": "^3.67.0"
+  }
+}
