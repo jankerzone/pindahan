@@ -54,6 +54,16 @@
                 <h4>URL Kardus:</h4>
                 <div class="box-url" id="box-url"></div>
                 <p>Klik URL di atas untuk melihat detail kardus di halaman baru</p>
+                
+                <h4>QR Code:</h4>
+                <div class="qr-code-container">
+                    <p>Gunakan URL pendek untuk QR Code agar kompatibel dengan semua pembaca QR:</p>
+                    <div class="box-short-url" id="box-short-url"></div>
+                    <div class="qr-code" id="qr-code-container"></div>
+                    <p>Scan QR Code di atas untuk langsung membuka kardus ini</p>
+                    <button id="save-qr-btn" class="save-qr-btn">🖨️ Simpan Gambar untuk Print/PDF</button>
+                </div>
+                
                 <button id="new-box">Tambah Kardus Lain</button>
             </div>
         </section>
@@ -76,6 +86,15 @@
                     <button id="add-item-btn">Tambah Item</button>
                 </div>
             </div>
+            
+            <!-- QR Code Section untuk halaman detail -->
+            <div class="qr-code-section" id="detail-qr-section" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                <h3>QR Code untuk Kardus Ini</h3>
+                <p>Scan QR Code di bawah untuk langsung membuka kardus ini:</p>
+                <div class="qr-code-container" id="detail-qr-container"></div>
+                <button id="save-detail-qr-btn" class="save-qr-btn">🖨️ Simpan Gambar untuk Print/PDF</button>
+            </div>
+            
             <button id="back-to-input">Kembali ke Input</button>
         </section>
         <center><p>Jankerzone - Aplikasi Pindahan</p></center>

@@ -90,6 +90,17 @@ app.get('/api/boxes', async (c) => {
   return c.json(results);
 });
 
+// URL shortening service route
+app.get('/b/:id', async (c) => {
+  const { id } = c.req.param();
+  if (!id) {
+    return c.json({ error: 'ID kardus diperlukan' }, 400);
+  }
+  
+  // Redirect to hash-based URL
+  return c.redirect(`/#${id}`, 302);
+});
+
 // Create HTTP server using Node's built-in http module
 const server = createServer(async (req, res) => {
   // Convert Node.js request to Hono request

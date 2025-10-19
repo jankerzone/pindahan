@@ -396,6 +396,92 @@ button[type="submit"]:hover,
     text-decoration: underline;
 }
 
+/* ===== QR CODE SECTION ===== */
+.qr-code-container {
+    margin: var(--spacing-xl) 0;
+    padding: var(--spacing-xl);
+    background: var(--bs-white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--bs-gray-300);
+    box-shadow: var(--shadow-sm);
+}
+
+.box-short-url {
+    font-size: var(--font-size-base);
+    margin: var(--spacing-md) 0;
+    padding: var(--spacing-md);
+    background: var(--bs-gray-100);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--bs-gray-200);
+    word-break: break-all;
+    display: block;
+}
+
+.box-short-url a {
+    color: var(--bs-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition);
+    word-break: break-all;
+}
+
+.box-short-url a:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
+
+#qr-code-container {
+    margin: var(--spacing-lg) auto;
+    text-align: center;
+}
+
+#qr-code-container img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--bs-gray-300);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+    background: var(--bs-white);
+}
+
+.save-qr-btn {
+    background: var(--gradient-success);
+    color: var(--bs-white);
+    border: none;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    transition: var(--transition);
+    margin-top: var(--spacing-lg);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.save-qr-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.error-message {
+    padding: var(--spacing-lg);
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: var(--border-radius);
+    color: #721c24;
+    text-align: center;
+}
+
+.error-message a {
+    color: #0056b3;
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+}
+
 /* ===== DETAIL MODE ===== */
 .box-info {
     display: flex;

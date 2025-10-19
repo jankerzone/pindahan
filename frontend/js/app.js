@@ -79,6 +79,9 @@ async function showDetailMode(boxId) {
     // Setup event listener untuk search
     setupSearchListener(boxId);
 
+    // Generate QR Code untuk halaman detail
+    generateDetailQrCode(boxId);
+
     const addItemButton = document.getElementById("add-item-btn");
     const newItemInput = document.getElementById("new-item-text");
 
@@ -109,6 +112,80 @@ async function showDetailMode(boxId) {
   } catch (error) {
     alert("Kardus tidak ditemukan atau terjadi kesalahan: " + error.message);
     showInputMode();
+  }
+}
+
+// Fungsi untuk generate QR Code pada halaman detail
+function generateDetailQrCode(boxId) {
+  const directUrl = `${window.location.origin}/#${boxId}`;
+  const encodedDirectUrl = encodeURIComponent(directUrl);
+  const timestamp = Date.now();
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedDirectUrl}&size=200x200&format=png&t=${timestamp}`;
+  const qrCodeContainer = document.getElementById("detail-qr-container");
+  
+  console.log("Generating detail QR code for URL:", directUrl);
+  
+  // Clear container first
+  qrCodeContainer.innerHTML = "";
+  
+  // Create image element with proper CORS handling
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = qrCodeUrl;
+  img.alt = `QR Code untuk kardus ${boxId}`;
+  img.style.maxWidth = "200px";
+  img.style.height = "auto";
+  img.style.border = "1px solid #ddd";
+  img.style.borderRadius = "4px";
+  img.style.padding = "5px";
+  img.style.backgroundColor = "white";
+  img.loading = "lazy";
+  
+  // Append image immediately to container
+  qrCodeContainer.appendChild(img);
+  console.log("Detail QR image appended to container");
+  
+  // Handle image loading errors
+  img.onerror = function() {
+    console.log("Failed to load PNG QR code, trying SVG fallback");
+    const svgImg = new Image();
+    svgImg.crossOrigin = 'anonymous';
+    svgImg.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedDirectUrl}&size=200x200&format=svg&t=${timestamp}`;
+    svgImg.alt = `QR Code untuk kardus ${boxId}`;
+    svgImg.style.maxWidth = "200px";
+    svgImg.style.height = "auto";
+    svgImg.style.border = "1px solid #ddd";
+    svgImg.style.borderRadius = "4px";
+    svgImg.style.padding = "5px";
+    svgImg.style.backgroundColor = "white";
+    
+    // Replace the failed PNG image with SVG
+    qrCodeContainer.innerHTML = "";
+    qrCodeContainer.appendChild(svgImg);
+    console.log("SVG detail QR image appended to container");
+    
+    svgImg.onerror = function() {
+      console.error("Failed to load both PNG and SVG QR codes");
+      qrCodeContainer.innerHTML = `<div class="error-message"><p>Gagal memuat QR Code.</p><p>Anda bisa mengakses langsung melalui: <a href="${directUrl}" target="_blank">${directUrl}</a></p></div>`;
+    };
+    
+    svgImg.onload = function() {
+      console.log("SVG detail QR code loaded successfully");
+    };
+  };
+  
+  // Handle successful image loading
+  img.onload = function() {
+    console.log("Detail QR code loaded successfully, image dimensions:", img.naturalWidth, "x", img.naturalHeight);
+  };
+  
+  // Add save button functionality for detail page
+  const saveBtn = document.getElementById("save-detail-qr-btn");
+  if (saveBtn) {
+    saveBtn.onclick = function() {
+      console.log("Detail save button clicked, boxId:", boxId);
+      saveQrAsImage(boxId, directUrl);
+    };
   }
 }
 
@@ -381,6 +458,99 @@ document
       const boxUrl = `${window.location.origin}/#${boxId}`;
       const urlElement = document.getElementById("box-url");
       urlElement.innerHTML = `<a href="${boxUrl}" target="_blank">${boxUrl}</a>`;
+      
+      // Buat short URL untuk QR Code
+      const shortUrl = `${window.location.origin}/b/${boxId}`;
+      const shortUrlElement = document.getElementById("box-short-url");
+      shortUrlElement.innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+      // Pastikan short URL terlihat
+      shortUrlElement.style.display = "block";
+      shortUrlElement.style.wordBreak = "break-all";
+      shortUrlElement.style.padding = "10px";
+      shortUrlElement.style.backgroundColor = "#f8f9fa";
+      shortUrlElement.style.border = "1px solid #dee2e6";
+      shortUrlElement.style.borderRadius = "4px";
+      
+      // Tambahkan penanganan error jika short URL tidak muncul
+      if (!shortUrlElement.innerHTML || shortUrlElement.innerHTML.trim() === "") {
+        shortUrlElement.innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+      }
+      
+      // Generate QR Code menggunakan QR Server API dengan CORS handling
+      // Use the direct hash URL instead of short URL for QR code generation
+      const directUrl = `${window.location.origin}/#${boxId}`;
+      const encodedDirectUrl = encodeURIComponent(directUrl);
+      // Add a cache buster to prevent caching issues
+      const timestamp = Date.now();
+      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedDirectUrl}&size=200x200&format=png&t=${timestamp}`;
+      const qrCodeContainer = document.getElementById("qr-code-container");
+      
+      console.log("Generating QR code for URL:", directUrl);
+      console.log("QR code URL:", qrCodeUrl);
+      
+      // Clear container first
+      qrCodeContainer.innerHTML = "";
+      
+      // Create image element with proper CORS handling
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // Enable CORS for canvas operations
+      img.src = qrCodeUrl;
+      img.alt = `QR Code untuk kardus ${boxId}`;
+      img.style.maxWidth = "200px";
+      img.style.height = "auto";
+      img.style.border = "1px solid #ddd";
+      img.style.borderRadius = "4px";
+      img.style.padding = "5px";
+      img.style.backgroundColor = "white";
+      img.loading = "lazy"; // Lazy load the image
+      
+      // Append image immediately to container (it will load asynchronously)
+      qrCodeContainer.appendChild(img);
+      console.log("QR image appended to container");
+      
+      // Handle image loading errors
+      img.onerror = function() {
+        console.log("Failed to load PNG QR code, trying SVG fallback");
+        const svgImg = new Image();
+        svgImg.crossOrigin = 'anonymous';
+        svgImg.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedDirectUrl}&size=200x200&format=svg&t=${timestamp}`;
+        svgImg.alt = `QR Code untuk kardus ${boxId}`;
+        svgImg.style.maxWidth = "200px";
+        svgImg.style.height = "auto";
+        svgImg.style.border = "1px solid #ddd";
+        svgImg.style.borderRadius = "4px";
+        svgImg.style.padding = "5px";
+        svgImg.style.backgroundColor = "white";
+        
+        // Replace the failed PNG image with SVG
+        qrCodeContainer.innerHTML = "";
+        qrCodeContainer.appendChild(svgImg);
+        console.log("SVG QR image appended to container");
+        
+        svgImg.onerror = function() {
+          console.error("Failed to load both PNG and SVG QR codes");
+          qrCodeContainer.innerHTML = `<div class="error-message"><p>Gagal memuat QR Code.</p><p>Anda bisa mengakses langsung melalui: <a href="${directUrl}" target="_blank">${directUrl}</a></p></div>`;
+        };
+        
+        svgImg.onload = function() {
+          console.log("SVG QR code loaded successfully");
+        };
+      };
+      
+      // Handle successful image loading
+      img.onload = function() {
+        console.log("QR code loaded successfully, image dimensions:", img.naturalWidth, "x", img.naturalHeight);
+      };
+
+      // Add save button functionality
+      const saveBtn = document.getElementById("save-qr-btn");
+      if (saveBtn) {
+        // Add event listener
+        saveBtn.onclick = function() {
+          console.log("Save button clicked, boxId:", boxId);
+          saveQrAsImage(boxId, shortUrl);
+        };
+      }
 
       document.getElementById("result").classList.remove("hidden");
 
@@ -441,6 +611,142 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Showing input mode (no valid hash)");
     showInputMode();
   }
-
-  console.log("App initialization complete");
+ console.log("App initialization complete");
+ 
 });
+
+// Function to save QR code as image
+function saveQrAsImage(boxId, shortUrl) {
+  console.log('saveQrAsImage called with boxId:', boxId, 'shortUrl:', shortUrl);
+  
+  try {
+    // Get the QR code image
+    const qrImg = document.querySelector('#qr-code-container img');
+    console.log('QR image found:', qrImg);
+    
+    if (!qrImg) {
+      console.error('QR code image not found');
+      alert('QR code belum tersedia');
+      return;
+    }
+
+    // Check if image is loaded and ready
+    console.log('QR image complete:', qrImg.complete, 'naturalWidth:', qrImg.naturalWidth);
+    if (!qrImg.complete || qrImg.naturalWidth === 0) {
+      console.warn('QR code image not fully loaded');
+      alert('QR code sedang dimuat. Tunggu sebentar dan coba lagi.');
+      return;
+    }
+
+    // Create a canvas element to combine the URL and QR code
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    console.log('Canvas created');
+    
+    // Set canvas dimensions
+    const padding = 40;
+    const titleHeight = 50;
+    const urlHeight = 60;
+    const qrSize = 300;
+    const footerHeight = 40;
+    const totalWidth = qrSize + (padding * 2);
+    const totalHeight = titleHeight + urlHeight + qrSize + footerHeight + (padding * 4);
+    
+    canvas.width = totalWidth;
+    canvas.height = totalHeight;
+    console.log('Canvas dimensions set:', canvas.width, 'x', canvas.height);
+    
+    // Fill background with white
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw title
+    ctx.fillStyle = '#0d6efd';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('KARDUS PINDAHAN', canvas.width / 2, padding + 20);
+    
+    // Draw box ID
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 32px Arial';
+    ctx.fillText(boxId, canvas.width / 2, padding + 50);
+    
+    // Draw full URL label
+    ctx.fillStyle = '#6c757d';
+    ctx.font = '16px Arial';
+    ctx.fillText('URL Lengkap:', canvas.width / 2, padding + titleHeight + 20);
+    
+    // Draw full URL
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 16px Arial';
+    const fullUrl = `${window.location.origin}/#${boxId}`;
+    ctx.fillText(fullUrl, canvas.width / 2, padding + titleHeight + 45);
+    
+    // Draw QR code - handle CORS issues
+    console.log('Attempting to draw QR image onto canvas');
+    try {
+      ctx.drawImage(qrImg, padding, padding + titleHeight + urlHeight, qrSize, qrSize);
+      console.log('QR image drawn successfully');
+    } catch (drawError) {
+      console.error('Error drawing QR image:', drawError);
+      // Fallback: create a new image with proper CORS handling
+      const fallbackImg = new Image();
+      fallbackImg.crossOrigin = 'anonymous';
+      fallbackImg.onload = function() {
+        console.log('Fallback QR image loaded successfully');
+        ctx.drawImage(fallbackImg, padding, padding + titleHeight + urlHeight, qrSize, qrSize);
+        completeCanvasDownload(canvas, boxId);
+      };
+      fallbackImg.onerror = function() {
+        console.error('Fallback QR image failed to load');
+        // If fallback also fails, show error message
+        alert('Gagal memuat gambar QR code. Silakan coba lagi atau gunakan URL langsung.');
+        return;
+      };
+      fallbackImg.src = qrImg.src;
+      return; // Wait for fallback image to load
+    }
+    
+    // Draw footer
+    ctx.fillStyle = '#6c757d';
+    ctx.font = '14px Arial';
+    ctx.fillText('Scan QR Code untuk membuka isi kardus', canvas.width / 2, padding + titleHeight + urlHeight + qrSize + 25);
+    
+    // Draw border
+    ctx.strokeStyle = '#0d6efd';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    
+    // Convert to data URL and download
+    console.log('Completing canvas download');
+    completeCanvasDownload(canvas, boxId);
+  } catch (error) {
+    console.error('Error saving QR image:', error);
+    alert('Gagal menyimpan gambar. Silakan coba lagi.');
+  }
+}
+
+// Helper function to complete canvas download
+function completeCanvasDownload(canvas, boxId) {
+  console.log('completeCanvasDownload called');
+  try {
+    console.log('Converting canvas to data URL');
+    const dataUrl = canvas.toDataURL('image/png');
+    console.log('Data URL created:', dataUrl.substring(0, 50) + '...');
+    
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = `kardus-pindahan-${boxId}.png`;
+    console.log('Download link created, filename:', a.download);
+    
+    document.body.appendChild(a);
+    console.log('Link appended to body');
+    a.click();
+    console.log('Link clicked, download should start');
+    document.body.removeChild(a);
+    console.log('Link removed from body');
+  } catch (downloadError) {
+    console.error('Error downloading image:', downloadError);
+    alert('Gagal mengunduh gambar. Silakan coba lagi.');
+  }
+}

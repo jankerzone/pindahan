@@ -20,8 +20,14 @@ d1_databases = [
   { binding = "DB", database_name = "pindahan-db-preview", database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" }
 ]
 
+[env.production]
+d1_databases = [
+  { binding = "DB", database_name = "pindahan-db", database_id = "c53540a4-17a0-49fd-9fc7-21dcd9e0f4d5" }
+]
+
 [site]
 bucket = "./frontend"
+include = ["index.html", "css/*", "js/*", "assets/*"]
 
 [dev]
 port = 8787
