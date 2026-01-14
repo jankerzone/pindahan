@@ -27,8 +27,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="box-content">Isi Kardus (pisahkan dengan koma):</label>
-                    <textarea id="box-content" placeholder="Contoh: hardisk external, hdd, keyboard usb, pakaian, tas hermes" required></textarea>
+                    <label for="box-content">Isi Kardus (pisahkan dengan koma atau baris baru):</label>
+                    <textarea id="box-content" placeholder="Contoh:
+hardisk external
+hdd
+keyboard usb
+pakaian, tas hermes" required></textarea>
                 </div>
 
                 <button type="submit">Simpan & Buat ID Unik</button>
@@ -52,8 +56,13 @@
                 <div class="box-id" id="generated-id"></div>
                 <p>Tulis Kode ini di badan kardus Anda</p>
                 <h4>URL Kardus:</h4>
-                <div class="box-url" id="box-url"></div>
-                <p>Klik URL di atas untuk melihat detail kardus di halaman baru</p>
+                <div class="box-url-container" style="display: flex; gap: 10px; align-items: center; justify-content: center; margin: 15px 0;">
+                    <div class="box-url" id="box-url" style="margin: 0; flex-grow: 1;"></div>
+                    <button id="copy-url-btn" class="secondary-btn" title="Salin URL" style="width: auto; padding: 10px;">
+                        📋 Salin
+                    </button>
+                </div>
+                <p>Klik URL di atas untuk melihat detail atau salin untuk dibagikan</p>
                 
                 <h4>QR Code:</h4>
                 <div class="qr-code-container">

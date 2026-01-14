@@ -116,6 +116,16 @@ app.use(
   }),
 );
 
+// Security Headers Middleware
+app.use("*", async (c, next) => {
+  await next();
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("X-Frame-Options", "DENY");
+  c.header("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Content-Security-Policy can be tricky with inline scripts, skipping for now or setting permissive
+  // c.header("Content-Security-Policy", "default-src 'self'");
+});
+
 // Routes
 app.get("/api/boxes/:id", async (c) => {
   const { id } = c.req.param();
@@ -146,13 +156,46 @@ app.post("/api/boxes", async (c) => {
       return c.json({ error: "Label dan content diperlukan" }, 400);
     }
 
+    // Input validation
+    if (label.length > 100) {
+      return c.json({ error: "Label terlalu panjang (maks 100 karakter)" }, 400);
+    }
+
+    const contentString = JSON.stringify(content);
+    if (contentString.length > 10000) {
+      return c.json({ error: "Konten terlalu besar" }, 400);
+    }
+
     await ensureSchema(c.env);
-    const id = generateUniqueId();
-    await c.env.DB.prepare(
-      "INSERT INTO boxes (id, label, content) VALUES (?, ?, ?)",
-    )
-      .bind(id, label, JSON.stringify(content))
-      .run();
+
+    // Collision handling
+    let id = generateUniqueId();
+    let retries = 3;
+    let success = false;
+
+    while (retries > 0) {
+      try {
+        await c.env.DB.prepare(
+          "INSERT INTO boxes (id, label, content) VALUES (?, ?, ?)",
+        )
+          .bind(id, label, contentString)
+          .run();
+        success = true;
+        break;
+      } catch (e: any) {
+        // Check if error is due to unique constraint violation
+        if (e.message && e.message.includes("UNIQUE constraint failed")) {
+          id = generateUniqueId();
+          retries--;
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    if (!success) {
+      return c.json({ error: "Gagal membuat ID unik, silakan coba lagi" }, 409);
+    }
 
     return c.json({ id, label, content }, 201);
   } catch (error) {

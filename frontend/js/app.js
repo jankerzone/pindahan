@@ -9,7 +9,7 @@ async function saveBoxData(label, content) {
       body: JSON.stringify({
         label: label,
         content: content
-          .split(",")
+          .split(/[\n,]/) // Split by newline or comma
           .map((item) => item.trim())
           .filter((item) => item !== ""),
       }),
@@ -25,6 +25,22 @@ async function saveBoxData(label, content) {
     console.error("Error:", error);
     throw error;
   }
+}
+
+// Fungsi helper untuk escape HTML untuk mencegah XSS
+function escapeHtml(text) {
+  if (!text) return text;
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Fungsi helper untuk escape karakter regex
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // Fungsi untuk mengambil data kardus dari API
@@ -253,11 +269,23 @@ function renderItems(boxData, searchTerm = "") {
 
     // Highlight search term
     if (searchTerm) {
-      const regex = new RegExp(`(${searchTerm})`, "gi");
-      span.innerHTML = itemText.replace(
-        regex,
-        '<mark class="search-highlight">$1</mark>',
-      );
+      // Gunakan regex dengan capturing group untuk memisahkan teks
+      // Escape searchTerm untuk mencegah regex injection
+      const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, "gi");
+
+      // Split string. Karena ada capturing group, hasil match juga akan masuk ke array
+      const parts = itemText.split(regex);
+
+      // Map setiap bagian: jika match search term (case insensitive), bungkus dengan mark.
+      // Sisanya escape HTML biasa.
+      span.innerHTML = parts.map(part => {
+        if (part.toLowerCase() === searchTerm.toLowerCase()) {
+          return `<mark class="search-highlight">${escapeHtml(part)}</mark>`;
+        }
+        return escapeHtml(part);
+      }).join('');
+    } else {
+      span.textContent = itemText;
     }
 
     const deleteBtn = document.createElement("button");
@@ -476,6 +504,23 @@ document
         shortUrlElement.innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
       }
       
+      // Setup Copy URL Button
+      const copyBtn = document.getElementById("copy-url-btn");
+      if (copyBtn) {
+        copyBtn.onclick = function() {
+          navigator.clipboard.writeText(boxUrl).then(() => {
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = "✅ Tersalin!";
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          }).catch(err => {
+            console.error('Failed to copy: ', err);
+            alert("Gagal menyalin URL");
+          });
+        };
+      }
+
       // Generate QR Code menggunakan QR Server API dengan CORS handling
       // Use the direct hash URL instead of short URL for QR code generation
       const directUrl = `${window.location.origin}/#${boxId}`;
